@@ -3,4 +3,4 @@
 # Loading this as a "normal" alias file loads it before completion so completion works!
 
 # Source my main bash file
-source "$MY_DOT_FILES/bash/combinedBash.bash"
+source "$MYDOTFILES/bash/combinedBash.bash"
