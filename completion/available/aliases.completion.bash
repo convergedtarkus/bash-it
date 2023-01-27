@@ -79,12 +79,14 @@ function _bash-it-component-completion-callback-on-init-aliases() {
 			if [[ "${compl_func#_"$namespace"::}" == "$compl_func" ]]; then
 				compl_wrapper="_${namespace}::${alias_name}"
 
-				make_c_words=""
+				# Need to break up the alias arguments so the resulting COMP_WORDS is split correctly.
+				alias_c_words=""
 				for i in "${alias_arg_words[@]}"; do
-					if [[ -n "$make_c_words" ]]; then
-						make_c_words+=" "
+					if [[ -n "$alias_c_words" ]]; then
+						alias_c_words+=" "
 					fi
-					make_c_words+="\"${i}\""
+
+					alias_c_words+="\"${i}\""
 				done
 
 				echo "function $compl_wrapper {
@@ -98,7 +100,7 @@ function _bash-it-component-completion-callback-on-init-aliases() {
                             prec_word=\${prec_word#* }
                         fi
                         (( COMP_CWORD += ${#alias_arg_words[@]} ))
-                        COMP_WORDS=(\"$alias_cmd\" ${make_c_words} \"\${COMP_WORDS[@]:1}\")
+                        COMP_WORDS=(\"$alias_cmd\" ${alias_c_words} \"\${COMP_WORDS[@]:1}\")
                         (( COMP_POINT -= \${#COMP_LINE} ))
                         COMP_LINE=\${COMP_LINE/$alias_name/$alias_cmd $alias_args}
                         (( COMP_POINT += \${#COMP_LINE} ))
@@ -115,7 +117,6 @@ function _bash-it-component-completion-callback-on-init-aliases() {
 		fi
 	done < <(alias -p)
 	# shellcheck source=/dev/null
-	cat "$tmp_file"
 	source "$tmp_file" && command rm -f "$tmp_file"
 }
 
